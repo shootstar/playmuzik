@@ -1,2 +1,2 @@
-worker: celery -A muzik worker -B -E --loglevel=info
+worker: celery -A muzik:celery worker --loglevel=info
 

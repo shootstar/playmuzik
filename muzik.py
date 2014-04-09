@@ -8,7 +8,7 @@ import urllib2
 from datetime import datetime
 
 from celery import Celery
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -25,8 +25,9 @@ from youtube_dl.utils import compat_str
 import settings #TODO settings
 
 
-pyechonest.config.ECHO_NEST_API_KEY = settings.ECHO_NEST_API_KEY
-soundcloud_client = soundcloud.Client(client_id=settings.SOUNDCLOUD_CLIENT_KEY)
+pyechonest.config.ECHO_NEST_API_KEY = os.environ.get("ECHO_NEST_API_KEY",settings.ECHO_NEST_API_KEY)
+SOUNDCLOUD_CLIENT_KEY = os.environ.get("SOUNDCLOUD_CLIENT_KEY",settings.SOUNDCLOUD_CLIENT_KEY)
+soundcloud_client = soundcloud.Client(client_id=SOUNDCLOUD_CLIENT_KEY)
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("PLAYMUZIK_DATABASE_URL",settings.PLAYMUZIK_DATABASE_URL)
@@ -83,8 +84,8 @@ class Muzik(db.Model):
         return True
 
     @classmethod
-    def get_recent(cls,num=20):
-        return Muzik.query.order_by(Muzik.register_date).limit(num)
+    def get_recent(cls,num=50):
+        return Muzik.query.order_by(Muzik.register_date).limit(num).all()
 
 @celery.task
 def get_soundcloud_muzik(sound_url):
@@ -112,7 +113,7 @@ def get_youtube_muzik(url):
     artist = None
     
     filepath = compat_str(settings.YOUTUBE_PATH + generate_filename())
-    y = YoutubeDL({"forcetitle":True,"outtmpl":filepath})
+    y = YoutubeDL({"format":"18/34/35/5/17","outtmpl":filepath}) 
     y.add_default_info_extractors()
     y.add_post_processor(FFmpegExtractAudioPP(preferredcodec="mp3"))
     value = y.download([url])
@@ -133,7 +134,7 @@ def save_to_database(name,artist,url,data):
 def get_youtube_title(url):
     try:
         urlldata = urlparse.urlparse(url)
-        query = urllparse.parse_qs(url_data.query)
+        query = urlparse.parse_qs(urldata.query)
         video_id = query["v"][0]
         yt_service = gdata.youtube.service.YouTubeService()
         query = gdata.youtube.service.YouTubeVideoQuery()
@@ -167,13 +168,11 @@ def submit():
 
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('page_not_found.html'), 404
+    return render_template('404.html')
 
-def test(muzik_type,muzik_url,delay=True):
-    mod = muzik_getter.get(muzik_type)
-    if delay:
-       mod = getattr(mod ,"delay")
-    mod(muzik_url) #TODO jobqueue
+@app.route('/static/<path:filename>')
+def send_foo(filename):
+    return send_from_directory('static/', filename)
 
 if __name__ == "__main__":
    manager.run()
