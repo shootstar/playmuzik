@@ -1,0 +1,1 @@
+#sudo ln -s `which ffmpeg` /usr/local/bin/en-ffmpeg
