@@ -22,8 +22,10 @@ from youtube_dl import YoutubeDL
 from youtube_dl.postprocessor import FFmpegExtractAudioPP
 from youtube_dl.utils import compat_str
 
-import settings #TODO settings
-
+try:
+    import settings #TODO settings
+except:
+    import sample_settings as settings
 
 pyechonest.config.ECHO_NEST_API_KEY = os.environ.get("ECHO_NEST_API_KEY",settings.ECHO_NEST_API_KEY)
 SOUNDCLOUD_CLIENT_KEY = os.environ.get("SOUNDCLOUD_CLIENT_KEY",settings.SOUNDCLOUD_CLIENT_KEY)

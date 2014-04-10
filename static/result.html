@@ -1,0 +1,36 @@
+
+
+        <div id="result" class="container">
+            <table>
+            <tr>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>URL</th>
+                <th>tempo</th>
+                <th>energy</th>
+                <th>danceability</th>
+                <th>duration</th>
+                <th>loudness</th>
+                <th>key</th>
+                <th>mode</th>
+                <th>time_signature</th>
+
+            </tr>
+            <tr ng-repeat="muzik in muziks">
+                <td>{{ muzik.name }}</td>
+                <td>{{muzik.artist}}</td>
+                <td>{{muzik.url}}</td>
+                <td>{{muzik.tempo}}</td>
+                <td>{{muzik.energy}}</td>
+                <td>{{muzik.danceability}}</td>
+                <td>{{muzik.duration}}</td>
+                <td>{{muzik.loudness}}</td>
+                <td>{{muzik.key}}</td>
+                <td>{{muzik.mode}}</td>
+                <td>{{muzik.time_signature}}</td>
+            </tr>
+            </table>
+        </div>
+
+
+
