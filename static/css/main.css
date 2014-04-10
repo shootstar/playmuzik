@@ -1,0 +1,26 @@
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+#header{
+    text-align:center;
+}
+
+#formMuzik{
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.formElement{
+    margin-top:20px;
+}
+
+#urlInput{
+    width: 400px;
+    height: 30px;
+}
+
+#data{
+    margin-top: 50px;
+}

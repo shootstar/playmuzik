@@ -8,7 +8,7 @@ import urllib2
 from datetime import datetime
 
 from celery import Celery
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, send_from_directory,make_response
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -133,7 +133,7 @@ def save_to_database(name,artist,url,data):
 
 def get_youtube_title(url):
     try:
-        urlldata = urlparse.urlparse(url)
+        urldata = urlparse.urlparse(url)
         query = urlparse.parse_qs(urldata.query)
         video_id = query["v"][0]
         yt_service = gdata.youtube.service.YouTubeService()
@@ -151,28 +151,36 @@ def generate_filename():
 
 muzik_getter = {"youtube":get_youtube_muzik,"soundcloud":get_soundcloud_muzik}
 
+
+
 @app.route("/",methods=["GET"])
 def index():
-    muzik_list = list()
     if request.method == "GET":
-       muzik_list = Muzik.get_recent()
-       return render_template("index.html",muzik_list=muzik_list) #TODO templates/index.html bootstrap
+       return make_response(open("templates/index.html").read()) #TODO templates/index.html bootstrap
 
 @app.route("/submit",methods=["POST"])
 def submit():
+    print "SUBMIT"
     if request.method == "POST":
-        muzik_url = request.form["muzik_url"] #TODO submit data
-        muzik_type = request.form["muzik_type"]
+        muzik_url = request.form["muzik_source"]
+        muzik_type = request.form["muzik_type"] #TODO parse muzik_type
         mod_name = "get_{muzik_type}_muzik".format(muzik_type=muzik_type)
         getattr("muzik",mod_name.delay)(muzik_url) #TODO jobqueue
+        return
 
-@app.errorhandler(404)
-def page_not_found(error):
-    return render_template('404.html')
+@app.route("/result",methods=["POST"])
+def result():
+    if request.method == "POST":
+        muzik_list = Muzik.get_recent()
+    return
 
 @app.route('/static/<path:filename>')
 def send_foo(filename):
     return send_from_directory('static/', filename)
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'),404
 
 if __name__ == "__main__":
    manager.run()

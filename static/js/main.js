@@ -1,18 +1,24 @@
 var muzik = angular.module('muzikApp', []);
 
-muzik.controller('SelectSource', function($scope) {
-    $scope.items = [
-        { id: 1, name: 'soundcloud' },
-        { id: 2, name: 'youtube' }
-    ];
+muzik.config(['$routeProvider', function($routeProvider) {
+        $routeProvider
+            .when('/', {
+                templateUrl: '../static/result.html',
+                controller: 'ResultController'
+            })
+            .otherwise({ redirectTo: '/' });
+    }])
+    .controller('ResultController', function($scope) {
+               $scope.muziks = [{"name":"hello"},{"name":"world"}]
+    })
+    .controller("FormController",function($scope, $http) {
 
-    $scope.selectedItem = null;
-});
+            $scope.items = [
+            { id: 1, name: 'soundcloud' },
+            { id: 2, name: 'youtube' }
+            ];
 
-muzik.controller("FormController",function($scope, $http) {
-
-			// create a blank object to hold our form information
-			// $scope will allow this to pass between controller and view
+            $scope.selectedItem = null;
 			$scope.formData = {};
 
 			// process the form
@@ -38,95 +44,7 @@ muzik.controller("FormController",function($scope, $http) {
 			        });
 
 			};
-});
-
-angular
-    .module('resultApp', [])
-    .config(['$routeProvider', function($routeProvider) {
-        $routeProvider
-            .when('/', {
-                templateUrl: 'static/result.html',
-                controller: 'ResultController'
-            })
-            .otherwise({ redirectTo: '/' });
-    }])
-    .factory('windowAlert', [
-        '$window',
-        function($window) {
-            return $window.alert;
-        }
-    ])
-    .controller('ResultController', [
-        '$scope',
-        '$http',
-        'windowAlert',
-        function($scope, $http, windowAlert) {
-               $scope.muziks = [{"name":"hello"},{"name":"world"}]
+    });
 
 
 
-//            $scope.retrieveLastNItems = function(n) {
-//                $http
-//                    .get('/todoRetrieve/' + n)
-//                    .success(function(data, status, headers, config) {
-//                        if (data.success) {
-//                            $scope.state.todoList = data.todoList;
-//                        } else {
-//                            windowAlert('Retrieval failed');
-//                        }
-//                    })
-//                    .error(function(data, status, headers, config) {
-//                        windowAlert("Retrieval failed");
-//                    });
-//            };
-
-//            $scope.setAndRetrieveLastNItems = function(n) {
-//                $scope.state.retrieveNr = n;
-//                $scope.retrieveLastNItems($scope.state.retrieveNr);
-//            };
-        }
-    ]);
-//    .directive('navtabs', function() {
-//        return {
-//            restrict: 'E',
-//            replace: true,
-//            templateUrl: '../static/navtabs.html',
-//            scope: {
-//                pageName: '='
-//            },
-//            controller: [
-//                '$scope',
-//                function($scope) {
-//                    this.selectTabIfOnPage = function(tab) {
-//                        if (tab.name === $scope.pageName) {
-//                            tab.selected = true;
-//                        }
-//                    };
-//                }
-//            ]
-//        };
-//    })
-//    .directive('tab', function() {
-//        return {
-//            require: '^navtabs',
-//            restrict: 'E',
-//            replace: true,
-//            transclude: true,
-//            scope: {},
-//            template: '<li ng-class="{ active: selected }"><a href="{{ href }}" ng-transclude></a></li>',
-//            link: function(scope, element, attr, navtabsCtrl) {
-//                scope.name = attr.name;
-//                scope.href = attr.href;
-//                scope.selected = false;
-//                navtabsCtrl.selectTabIfOnPage(scope);
-//            }
-//        };
-//    })
-//    .controller('SecondController', [
-//        '$scope',
-//        function($scope) {
-//            $scope.state = {};
-//            $scope.state.pageName = 'secondPage';
-//        }
-//    ])
-//    ;
