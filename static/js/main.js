@@ -9,7 +9,7 @@ muzik.config(['$routeProvider', function($routeProvider) {
             .otherwise({ redirectTo: '/' });
     }])
     .controller('ResultController', function($scope) {
-               $scope.muziks = [{"name":"hello"},{"name":"world"}]
+               $scope.muziks = [{"name":"hello","url":"http://soundcloud.com"},{"name":"world"}]
     })
     .controller("FormController",function($scope, $http) {
 
