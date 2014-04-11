@@ -17,7 +17,7 @@ from collections import OrderedDict
 import soundcloud
 import pyechonest
 import gdata
-from echonest.remix.audio import LocalAudioFile
+from audio import LocalAudioFile
 from youtube_dl import YoutubeDL
 from youtube_dl.postprocessor import FFmpegExtractAudioPP
 from youtube_dl.utils import compat_str
