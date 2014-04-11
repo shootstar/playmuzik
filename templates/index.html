@@ -21,8 +21,8 @@
     <body ng-app="muzikApp">
     <div id="content">
             <div id="header">
-                <div id="title" class="container">
-                    <h1>DATA MUZIK</h1>
+                <div class="container">
+                    <h1 id="title">DATA MUZIK</h1>
                     <p>
                         Check some datas of music in <a href="http://soundcloud.com" target="_newtab">soundcloud</a>.
                     </p>
@@ -38,8 +38,8 @@
                         <!--ng-options="item as item.name for item in items"></select>-->
                     <!--</div>-->
 
-                    <div class="formElement" id="urlInput" >
-                        <input type="text" name="source" class="" ng-model="formData.source" placeholder="http://soundcloud.com">
+                    <div class="formElement" >
+                        <input type="text" id="urlInput" name="source" class="" ng-model="formData.source" placeholder="http://soundcloud.com">
                         <small class="error"
                                ng-show="signup_form.email.$error.required">
                            URL is required.
@@ -62,8 +62,8 @@
         </div>
 
     </div>
-    <hr>
     <div id="footer">
+        <hr>
         <p>&copy;datamuzik 2014</p>
     </div>
 
