@@ -27,4 +27,3 @@ requests==2.2.1
 simplejson==3.4.0
 soundcloud==0.4.1
 wsgiref==0.1.2
-#youtube-dl==2014.04.07.4
