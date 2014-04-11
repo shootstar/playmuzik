@@ -1,5 +1,5 @@
 var muzik = angular.module('muzikApp', []);
-
+var aaa;
 muzik.config(['$routeProvider', function($routeProvider) {
         $routeProvider
             .when('/', {
@@ -8,21 +8,30 @@ muzik.config(['$routeProvider', function($routeProvider) {
             })
             .otherwise({ redirectTo: '/' });
     }])
-    .controller('ResultController', function($scope) {
-               $scope.muziks = [{"name":"hello","url":"http://soundcloud.com"},{"name":"world"}]
+    .controller('ResultController', function($scope,$http) {
+               $scope.muziks= [];
+//               $scope.muziks = [{"name":"hello","url":"http://soundcloud.com"},{"name":"world"}]
+               $scope.getresult = function(){
+                   $http
+                    .post("/result")
+                    .success(
+                        function(data,status,headers,config){
+
+                            $scope.muziks = data
+
+                        })
+                    .error(function(data, status, headers, config) {
+                        });
+            };
     })
     .controller("FormController",function($scope, $http) {
 
-            $scope.items = [
-            { id: 1, name: 'soundcloud' },
-            { id: 2, name: 'youtube' }
-            ];
+
 
             $scope.selectedItem = null;
 			$scope.formData = {};
 
-			// process the form
-			$scope.processForm = function() {
+            $scope.processForm = function() {
 				$http({
 			        method  : 'POST',
 			        url     : 'submit',

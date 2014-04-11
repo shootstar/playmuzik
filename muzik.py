@@ -8,11 +8,11 @@ import urllib2
 from datetime import datetime
 
 from celery import Celery
-from flask import Flask, render_template, request, send_from_directory,make_response
+from flask import Flask, Response,render_template, request, send_from_directory,make_response
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
-
+from collections import OrderedDict
 
 import soundcloud
 import pyechonest
@@ -88,6 +88,24 @@ class Muzik(db.Model):
     @classmethod
     def get_recent(cls,num=50):
         return Muzik.query.order_by(Muzik.register_date).limit(num).all()
+
+    def _asdict(self):
+        result = OrderedDict()
+        for key in self.__mapper__.c.keys():
+            result[key] = getattr(self, key)
+        return result
+
+def date_handler(o):
+    if hasattr(o, 'isoformat') and callable(o.isoformat):
+        return o.isoformat()
+    raise TypeError("Can't serialize %r" % (o,))
+
+def muzik_to_json(muzik):
+    muzik_list = list()
+    # print "muzik",muzik
+    map(lambda x:muzik_list.append(x._asdict()),muzik)
+    muzik_json = simplejson.dumps(muzik_list,default=date_handler)
+    return muzik_json
 
 @celery.task
 def get_soundcloud_muzik(sound_url):
@@ -168,13 +186,13 @@ def submit():
         muzik_type = request.form["muzik_type"] #TODO parse muzik_type
         mod_name = "get_{muzik_type}_muzik".format(muzik_type=muzik_type)
         getattr("muzik",mod_name.delay)(muzik_url) #TODO jobqueue
-        return
+        return Response()
 
-@app.route("/result",methods=["POST"])
+@app.route("/result",methods=["POST","GET"])
 def result():
-    if request.method == "POST":
-        muzik_list = Muzik.get_recent()
-    return
+    muzik_list = Muzik.get_recent()
+    muzik_json= muzik_to_json(muzik_list)
+    return Response(muzik_json)
 
 @app.route('/static/<path:filename>')
 def send_foo(filename):
