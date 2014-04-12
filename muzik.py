@@ -188,7 +188,7 @@ def submit():
     muzik_url = None
     if request.method == "POST":
         muzik_url = request.form["source"]
-        get_soundcloud_muzik(muzik_url)
+        get_soundcloud_muzik.delay(muzik_url)
         #get_soundcloud_muzik.delay(muzik_url)
     if request.method == "GET":
         muzik_url = request.args.get("url")
