@@ -115,7 +115,7 @@ def get_soundcloud_muzik(sound_url):
         url = s.download_url
     else:
         url = s.stream_url
-        
+
     url += "?client_id=" + SOUNDCLOUD_CLIENT_KEY
     result = urllib2.urlopen(url)
     name = s.title
@@ -185,7 +185,8 @@ def submit():
     print "SUBMIT"
     if request.method == "POST":
         muzik_url = request.form["source"]
-        get_soundcloud_muzik.delay(muzik_url)
+        #get_soundcloud_muzik.delay(muzik_url)
+        get_soundcloud_muzik(muzik_url)
         # muzik_type = request.form["muzik_type"] #TODO parse muzik_type
         # mod_name = "get_{muzik_type}_muzik".format(muzik_type=muzik_type)
         # getattr("muzik",mod_name.delay)(muzik_url) #TODO jobqueue
