@@ -40,7 +40,7 @@ migrate = Migrate(app, db)
 manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
-celery = Celery('tasks', broker='amqp://guest@localhost//')
+celery = Celery('tasks')
 
 class Muzik(db.Model):
     id = db.Column(db.Integer, primary_key=True)
