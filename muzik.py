@@ -32,7 +32,7 @@ SOUNDCLOUD_CLIENT_KEY = os.environ.get("SOUNDCLOUD_CLIENT_KEY",settings.SOUNDCLO
 soundcloud_client = soundcloud.Client(client_id=SOUNDCLOUD_CLIENT_KEY)
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("PLAYMUZIK_DATABASE_URL",settings.PLAYMUZIK_DATABASE_URL)
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL",settings.PLAYMUZIK_DATABASE_URL)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
