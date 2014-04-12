@@ -115,9 +115,8 @@ def get_soundcloud_muzik(sound_url):
         url = s.download_url
     else:
         url = s.stream_url
-
-    
-    url += "?client_id=" + settings.SOUNDCLOUD_CLIENT_KEY
+        
+    url += "?client_id=" + SOUNDCLOUD_CLIENT_KEY
     result = urllib2.urlopen(url)
     name = s.title
     artist = s.user.get("username")
