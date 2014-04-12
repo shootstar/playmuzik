@@ -120,7 +120,7 @@ def get_soundcloud_muzik(sound_url):
     result = urllib2.urlopen(url)
     name = s.title
     artist = s.user.get("username")
-    filename = settings.SOUNDCLOUD_PATH + generate_filename()
+    filename = "/tmp/" + generate_filename()
     print "write to filename",filename
     with open(filename,"w") as f: #TODO raw mp3 possible to analyse
         f.write(result.read())
