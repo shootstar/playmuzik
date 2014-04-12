@@ -41,6 +41,7 @@ manager = Manager(app)
 manager.add_command('db', MigrateCommand)
 
 celery = Celery('tasks')
+celery.config_from_object('celeryconfig')
 
 class Muzik(db.Model):
     id = db.Column(db.Integer, primary_key=True)
