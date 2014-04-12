@@ -32,6 +32,7 @@ muzik.config(['$routeProvider', function($routeProvider) {
 			$scope.formData = {};
 
             $scope.processForm = function() {
+                console.log("posted")
                 data = $scope.formData;
                 $scope.posted = true;
                 $scope.formData = {};

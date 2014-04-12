@@ -29,9 +29,6 @@
                 </div>
             </div>
             
-            <div ng-show="posted">
-              <span>Thanks!</span>
-            </div>
 
             <div id="submit" class="container" ng-controller="FormController">
                 <div class="col-md-8 col-md-offset-2">
@@ -41,7 +38,9 @@
                     <!--<select ng-model="selectedItem"-->
                         <!--ng-options="item as item.name for item in items"></select>-->
                     <!--</div>-->
-
+                    <div ng-show="posted">
+                      <span>Thanks!</span>
+                    </div>
                     <div class="formElement" >
                         <input type="text" id="urlInput" name="source" class="" ng-model="formData.source" placeholder="http://soundcloud.com">
                         <small class="error"
