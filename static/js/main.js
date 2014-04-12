@@ -27,12 +27,13 @@ muzik.config(['$routeProvider', function($routeProvider) {
     .controller("FormController",function($scope, $http) {
 
 
-
+            $scope.posted = false;
             $scope.selectedItem = null;
 			$scope.formData = {};
 
             $scope.processForm = function() {
-                data = $scope.formData
+                data = $scope.formData;
+                $scope.posted = true;
                 $scope.formData = {};
 				$http({
 			        method  : 'POST',
