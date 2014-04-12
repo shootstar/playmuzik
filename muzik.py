@@ -121,11 +121,13 @@ def get_soundcloud_muzik(sound_url):
     name = s.title
     artist = s.user.get("username")
     filename = settings.SOUNDCLOUD_PATH + generate_filename()
-    print "filename",filename
+    print "write to filename",filename
     with open(filename,"w") as f: #TODO raw mp3 possible to analyse
         f.write(result.read())
+    print "analyse start"
     data = analyse_muzik(filename)
-    result = save_to_database(name,artist,url,data)
+    print "save to database",type(data)
+    result = save_to_database(name,artist,sound_url,data)
     print "result",result
     return result
 
@@ -180,17 +182,22 @@ def index():
     if request.method == "GET":
        return make_response(open("templates/index.html").read()) #TODO templates/index.html bootstrap
 
-@app.route("/submit",methods=["POST"])
+@app.route("/submit",methods=["GET"])
 def submit():
     print "SUBMIT"
+    muzik_url = None
     if request.method == "POST":
         muzik_url = request.form["source"]
-        #get_soundcloud_muzik.delay(muzik_url)
         get_soundcloud_muzik(muzik_url)
+        #get_soundcloud_muzik.delay(muzik_url)
+    if request.method == "GET":
+        muzik_url = request.args.get("url")
+        get_soundcloud_muzik.delay(muzik_url)
+
         # muzik_type = request.form["muzik_type"] #TODO parse muzik_type
         # mod_name = "get_{muzik_type}_muzik".format(muzik_type=muzik_type)
         # getattr("muzik",mod_name.delay)(muzik_url) #TODO jobqueue
-        return Response()
+    return Response()
 
 @app.route("/result",methods=["POST","GET"])
 def result():
@@ -207,7 +214,8 @@ def page_not_found(error):
     return render_template('404.html'),404
 
 if __name__ == "__main__":
-   manager.run()
+   # manager.run()
+   app.run(debug=True)
 
 
 #http://shkh.hatenablog.com/entry/2013/01/01/192857
