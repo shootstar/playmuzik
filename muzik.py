@@ -182,7 +182,7 @@ def index():
     if request.method == "GET":
        return make_response(open("templates/index.html").read()) #TODO templates/index.html bootstrap
 
-@app.route("/submit",methods=["GET"])
+@app.route("/submit",methods=["POST","GET"])
 def submit():
     print "SUBMIT"
     muzik_url = None
