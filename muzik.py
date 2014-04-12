@@ -65,7 +65,7 @@ class Muzik(db.Model):
         self.url = url
 #        self.beat = data.beats
         self.tempo = data.tempo
-        self.enegy = data.energy
+        self.energy = data.energy
         self.danceability = data.danceability
         self.duration = data.duration
         self.loudness = data.loudness
@@ -107,8 +107,9 @@ def muzik_to_json(muzik):
     muzik_json = simplejson.dumps(muzik_list,default=date_handler)
     return muzik_json
 
-@celery.task
+@celery.task(name="soundcloud")
 def get_soundcloud_muzik(sound_url):
+    print "soundcloud",sound_url
     s = soundcloud_client.get("/resolve",url=sound_url)
     if s.downloadable and s.original_format == "mp3":
         url = s.download_url
@@ -121,10 +122,12 @@ def get_soundcloud_muzik(sound_url):
     name = s.title
     artist = s.user.get("username")
     filename = settings.SOUNDCLOUD_PATH + generate_filename()
+    print "filename",filename
     with open(filename,"w") as f: #TODO raw mp3 possible to analyse
         f.write(result.read())
     data = analyse_muzik(filename)
     result = save_to_database(name,artist,url,data)
+    print "result",result
     return result
 
 @celery.task
@@ -182,10 +185,11 @@ def index():
 def submit():
     print "SUBMIT"
     if request.method == "POST":
-        muzik_url = request.form["muzik_source"]
-        muzik_type = request.form["muzik_type"] #TODO parse muzik_type
-        mod_name = "get_{muzik_type}_muzik".format(muzik_type=muzik_type)
-        getattr("muzik",mod_name.delay)(muzik_url) #TODO jobqueue
+        muzik_url = request.form["source"]
+        get_soundcloud_muzik.delay(muzik_url)
+        # muzik_type = request.form["muzik_type"] #TODO parse muzik_type
+        # mod_name = "get_{muzik_type}_muzik".format(muzik_type=muzik_type)
+        # getattr("muzik",mod_name.delay)(muzik_url) #TODO jobqueue
         return Response()
 
 @app.route("/result",methods=["POST","GET"])
