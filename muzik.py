@@ -18,9 +18,11 @@ import soundcloud
 import pyechonest
 import gdata
 from audio import LocalAudioFile
+import subprocess
+from subprocess import Popen
 from youtube_dl import YoutubeDL
 from youtube_dl.postprocessor import FFmpegExtractAudioPP
-from youtube_dl.utils import compat_str
+from youtube_dl.utils import compat_str,DateRange
 
 try:
     import settings #TODO settings
@@ -132,19 +134,36 @@ def get_soundcloud_muzik(sound_url):
     print "result",result
     return result
 
+def download_youtube(url,filepath,params=None):
+    tmp_filepath = compat_str(filepath)
+    print "download to",tmp_filepath
+    params = params or settings.youtube_params
+    params.update({"outtmpl":tmp_filepath,"daterange":DateRange(None,None)})
+    y = YoutubeDL(params) 
+     #y = YoutubeDL({"format":"18/34/35/5/17","outtmpl":filepath}) 
+     #y.print_debug_header()
+    y.add_default_info_extractors()
+    y.add_post_processor(FFmpegExtractAudioPP(preferredcodec="m4a",preferredquality=5, nopostoverwrites=False))
+    value = y.download([url])
+    #cmd = 'youtube-dl {url} --extract-audio --audio-format wav -o {filepath}'.format(url=url,filepath=filepath)
+    #print cmd
+    #result = subprocess.call(cmd,shell=True)
+    #print result
+    return True
+
 @celery.task
 def get_youtube_muzik(url):
     value = ""
     artist = None
-    
-    filepath = compat_str(settings.YOUTUBE_PATH + generate_filename())
-    y = YoutubeDL({"format":"18/34/35/5/17","outtmpl":filepath}) 
-    y.add_default_info_extractors()
-    y.add_post_processor(FFmpegExtractAudioPP(preferredcodec="mp3"))
-    value = y.download([url])
 
+    filename = generate_filename(".mp3")
+    filepath = settings.YOUTUBE_PATH + filename
+    result = download_youtube(url,filepath)
+    if not result:
+        return
     name = get_youtube_title(url)
-    data = analyse_muzik(filepath)
+    filepath2 = filepath.split(".")[0] + ".m4a" #TODO for some reasons.
+    data = analyse_muzik(filepath2)
     result = save_to_database(name,artist,url,data)
     return result
 
@@ -170,9 +189,9 @@ def get_youtube_title(url):
         name = None
     return name
 
-def generate_filename():
+def generate_filename(form=".mp3"):
    timestamp = time.time()
-   return "".join(str(timestamp).split(".")) + ".mp3"
+   return "".join(str(timestamp).split(".")) + form
 
 muzik_getter = {"youtube":get_youtube_muzik,"soundcloud":get_soundcloud_muzik}
 
@@ -189,7 +208,12 @@ def submit():
     muzik_url = None
     if request.method == "POST":
         muzik_url = request.form["source"]
-        get_soundcloud_muzik.delay(muzik_url)
+        if "youtube" in muzik_url:
+            get_youtube_muzik.delay(muzik_url)
+        elif "soundcloud" in muzik_url:
+            get_soundcloud_muzik.delay(muzik_url)
+        else:
+            return Response()
         #get_soundcloud_muzik.delay(muzik_url)
     if request.method == "GET":
         muzik_url = request.args.get("url")
