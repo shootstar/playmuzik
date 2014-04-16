@@ -16,7 +16,7 @@ from collections import OrderedDict
 
 import soundcloud
 import pyechonest
-import gdata
+from gdata.youtube.service import YouTubeService,YouTubeVideoQuery
 from audio import LocalAudioFile
 import subprocess
 from subprocess import Popen
@@ -176,18 +176,16 @@ def save_to_database(name,artist,url,data):
     return result
 
 def get_youtube_title(url):
-    try:
+    
         urldata = urlparse.urlparse(url)
         query = urlparse.parse_qs(urldata.query)
         video_id = query["v"][0]
-        yt_service = gdata.youtube.service.YouTubeService()
-        query = gdata.youtube.service.YouTubeVideoQuery()
+        yt_service = YouTubeService()
+        query = YouTubeVideoQuery()
         query.vq = video_id
         feed = yt_service.YouTubeQuery(query)
-        name = feed[0].entry.title
-    except:
-        name = None
-    return name
+        name = feed.entry[0].title.text
+        return name
 
 def generate_filename(form=".mp3"):
    timestamp = time.time()
