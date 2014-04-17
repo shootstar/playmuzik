@@ -2,3 +2,5 @@
 *.pyc
 settings.py
 setup_heroku.sh
+muzik-venv
+supervisor*

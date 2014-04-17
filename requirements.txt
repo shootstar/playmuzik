@@ -1,3 +1,4 @@
+MySQL-python
 Flask==0.10.1
 Flask-Migrate==1.2.0
 Flask-SQLAlchemy==1.0
@@ -12,7 +13,6 @@ amqp==1.4.4
 anyjson==0.3.3
 argparse==1.2.1
 billiard==3.3.0.16
-celery==3.1.10
 distribute==0.7.3
 fudge==1.0.3
 gdata==2.0.18
@@ -26,6 +26,7 @@ pytz==2014.2
 requests==2.2.1
 simplejson==3.4.0
 wsgiref==0.1.2
+celery
 gunicorn
 soundcloud
 youtube-dl

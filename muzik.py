@@ -28,6 +28,7 @@ try:
     import settings #TODO settings
 except:
     import sample_settings as settings
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 pyechonest.config.ECHO_NEST_API_KEY = os.environ.get("ECHO_NEST_API_KEY",settings.ECHO_NEST_API_KEY)
 SOUNDCLOUD_CLIENT_KEY = os.environ.get("SOUNDCLOUD_CLIENT_KEY",settings.SOUNDCLOUD_CLIENT_KEY)
@@ -198,7 +199,8 @@ muzik_getter = {"youtube":get_youtube_muzik,"soundcloud":get_soundcloud_muzik}
 @app.route("/",methods=["GET"])
 def index():
     if request.method == "GET":
-       return make_response(open("templates/index.html").read()) #TODO templates/index.html bootstrap
+       print APP_ROOT + "/templates"
+       return make_response(open(APP_ROOT + "/templates/index.html").read()) #TODO templates/index.html bootstrap
 
 @app.route("/submit",methods=["POST","GET"])
 def submit():
@@ -206,10 +208,17 @@ def submit():
     muzik_url = None
     if request.method == "POST":
         muzik_url = request.form["source"]
+        status = celery.current_app.control.inspect().ping()
         if "youtube" in muzik_url:
-            get_youtube_muzik.delay(muzik_url)
+            if status:
+               get_youtube_muzik.delay(muzik_url)
+            else:
+               get_youtube_muzik(muzik_url)
         elif "soundcloud" in muzik_url:
-            get_soundcloud_muzik.delay(muzik_url)
+            if status:
+               get_soundcloud_muzik.delay(muzik_url)
+            else:
+               get_soundcloud_muzik(muzik_url)
         else:
             return Response()
         #get_soundcloud_muzik.delay(muzik_url)
@@ -237,9 +246,6 @@ def page_not_found(error):
     return render_template('404.html'),404
 
 if __name__ == "__main__":
-   # manager.run()
-   app.run(debug=True)
+   manager.run()
+   #app.run(debug=True)
 
-
-#http://shkh.hatenablog.com/entry/2013/01/01/192857
-#https://github.com/yuvadm/heroku-periodical
